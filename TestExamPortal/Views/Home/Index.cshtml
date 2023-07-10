@@ -1,0 +1,612 @@
+﻿@{
+    ViewBag.Title = "Customer Info";
+}
+<style>
+
+    * {
+        font-family: Arial;
+    }
+
+    body {
+        background: rgb(79, 179, 236);
+    }
+
+    main {
+        /*width: 450px;*/
+        margin-left: auto;
+        margin-right: auto;
+        /*margin-top: 100px;*/
+        border: solid 1px rgb(24, 165, 231);
+        background: white;
+        border-radius: 10px;
+    }
+
+    #title {
+        text-align: center;
+    }
+
+    #addList, #addAllergyList {
+        display: flex;
+        justify-content: center;
+    }
+
+    #OtherNCDs, #AllergiesName {
+        border: solid 1px rgb(24, 165, 231);
+    }
+
+    #addBtn, #addAllergyBtn {
+        border: none;
+        background: rgb(24, 165, 231);
+        color: white;
+        padding: 10px 20px;
+    }
+
+        #addBtn:hover {
+            background: rgb(61, 163, 211);
+            color: white;
+        }
+
+    #OtherNCDs,
+    #addBtn, #AllergiesName, #addAllergyBtn {
+        font-size: 25px;
+    }
+
+
+    ul {
+        list-style: none;
+        line-height: 40px;
+    }
+
+    .trash {
+        vertical-align: middle;
+        font-size: 20px !important;
+        color: red;
+    }
+
+    .style, .styles {
+        padding-right: 40px;
+    }
+
+    #det, #detAllergy {
+        cursor: pointer;
+        float: right;
+        border: none;
+        background: none;
+    }
+
+    /* ------------------------------*/
+
+    .required {
+        color: red !important;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -moz-appearance: textfield !important;
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    fieldset.scheduler-border {
+        border: 1px solid #ccc;
+        padding: 0px 5px 10px 5px;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
+
+    legend.scheduler-border {
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: left;
+        width: auto;
+        padding: 0 0px;
+        border-bottom: none;
+        margin-left: -15px;
+    }
+
+    /*pagination*/
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -moz-appearance: textfield !important;
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .pagination {
+        margin: 0px;
+    }
+
+        .pagination span {
+            padding: 1px 9px;
+            height: 25px;
+            background-color: #dddddd;
+            border: 1px solid #868e96 !important;
+            color: #000;
+        }
+
+    .focusNumber {
+        background-color: #3C8DBC !important;
+        color: #fff;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .activePage {
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .pageNumbers:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+    /*./pagination*/
+
+    .table tbody > tr > td {
+        vertical-align: middle !important;
+    }
+
+    .table tbody > tr > th {
+        vertical-align: middle !important;
+    }
+
+    .info-box-text {
+        text-transform: uppercase;
+        text-align: center;
+        padding-bottom: 10px;
+        font-size: 18px;
+        color: #000;
+    }
+
+    .info-box-content {
+        padding: 9px 10px;
+        margin-left: 90px;
+    }
+
+    .attendance:hover .info-box-content {
+        background: #f39c12;
+        color: #fff;
+    }
+
+    .attendance:hover .info-box-text {
+        color: #fff;
+    }
+
+    .currenttime ul {
+        padding: 0px;
+        margin: 0px;
+    }
+
+        .currenttime ul li {
+            display: inline;
+        }
+
+    input, select, textarea {
+        height: 31px;
+        width: 100% !important;
+    }
+
+    .checkboxSize {
+        height: 20px;
+        width: 100% !important;
+    }
+
+    th {
+        white-space: nowrap;
+        border: 1px solid #ccc !important;
+    }
+
+        th.trBorder, td {
+            border: 1px solid #ccc !important;
+        }
+
+    #searchpagenumber {
+        border: 1px solid #868e96 !important;
+    }
+
+    .box {
+        margin-bottom: 0px;
+    }
+
+    @@media(min-width:768px) and (max-width:1280px) {
+        .screensize {
+            width: 100% !important;
+        }
+    }
+
+    .modal-dialog {
+        width: 60% !important;
+        margin-left: 35% !important;
+    }
+
+    .modal-content {
+        width: 60% !important;
+    }
+
+    .form-group {
+        margin-bottom: 45px !important
+    }
+
+</style>
+
+<link href="~/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/css/toastr.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<section class="content-header">
+    <ol class="breadcrumb">
+        <button class="btn btn-primary" id="modalShowing" data-toggle="modal"> <i class="fa fa-plus"></i> Add Patient </button>
+    </ol>
+</section>
+
+<!--Modal Area Start-->
+<div id="addmodal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @* <form name="addform" class="form-horizontal" id="addform" novalidate>*@
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 class="modal-title"><span id="title"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="hidden" class="form-control" name="Id" id="Id" />
+
+
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">
+                                    Patient Name :
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" name="PatientName" id="PatientName" autocomplete="off" required />
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">
+                                    Diseases Name :
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="DeseaseId" id="DeseaseId" required>
+                                        <option value="" selected>--Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">
+                                    Epilepsy :
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="EpilepsyId" id="EpilepsyId" required>
+                                        <option value="" selected>--Select--</option>
+                                        <option value="1">Yes</option>
+                                        <option value="2">No</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">
+                                    Other NCDs :
+                                </label>
+                                <div class="col-md-8">
+                                    <main>
+                                        <div id="addList">
+                                            <input type="text" class="form-control" name="OtherNCDs" id="OtherNCDs" autocomplete="off" />
+                                            <button id="addBtn" style="height:34px !important;padding:10px;margin-left:5px;padding-top:0px;">Add</button>
+                                        </div>
+                                        <ul class="style">
+                                        </ul>
+                                    </main>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">
+                                    Allergies :
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-8">
+                                    <main>
+                                        <div id="addAllergyList">
+                                            <input type="text" class="form-control" name="AllergiesName" id="AllergiesName" autocomplete="off" />
+                                            <button id="addAllergyBtn" style="height:34px !important;padding:10px;margin-left:5px;padding-top:0px;">Add</button>
+                                        </div>
+                                        <ul class="styles">
+                                        </ul>
+                                    </main>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="col-md-7 pull-left">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                            <div class="col-md-2 pull-left">
+                                <input type="submit" class="btn btn-primary" name="btnSave" id="btnSave" value="Save" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* </form>*@
+        </div>
+    </div>
+</div>
+<!--Modal Area End-->
+
+<div style="top:5px;">
+    <section class="content">
+        <div class="row" style="padding-bottom: 10px;margin-right:0px;margin-left:0px;">
+            <div class="col-md-12 col-sm-12 col-xs-12" id="cutomerList">
+                <div class="box box-info">
+                    <table class="table table-bordered no-margin display table-striped table-condensed table-hover table-responsive display nowrap">
+                        <thead>
+                            <tr style="background: lightgray;">
+                                <th style="width:5%">SL</th>
+                                <th style="width:15%">Patient Name</th>
+                                <th style="width:15%">Diseases Name</th>
+                                <th style="width:15%">Epilepsy</th>
+                                <th style="width:15%">Other NCDs</th>
+                                <th style="width:15%">Allergies</th>
+                                <th colspan="2" style="width: 2%;text-align:center;">Modify</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lst">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="~/lib/jquery/jquery-3.4.1.min.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/toastr.min.js"></script>
+
+<script>
+
+    var otherNCDsList = [];
+    var allergiesNameList = [];
+
+    $(document).ready(function () {
+        GetPatientInfoList();
+        GetDiseasesList();
+
+        function GetDiseasesList() {
+            $.ajax({
+                type: 'GET',
+                url: 'Dropdown/GetAllDiseases/',
+                success: function (res) {
+                    debugger;
+                    $.each(res, function (i, item) {
+                        $('#DeseaseId').append($('<option>', {
+                            value: item.id,
+                            text: item.name
+                        }));
+                    });
+                }
+            });
+        };
+
+        function GetPatientInfoList() {
+            $.ajax({
+                type: 'GET',
+                url: 'PatientInfo/GetAllPatienInfo/',
+                success: function (res) {
+                    debugger;
+                    $.each(res, function (i, item) {
+                        var ncds = item.ncDs ? item.ncDs.map(obj => obj.name).join(' , ') : '';
+                        var allergies = item.allergies ? item.allergies.map(obj => obj.name).join(' , ') : '';
+                        console.log(res);
+                        $('#lst').append(` <tr>
+                                       <td>${item.sl}</td>
+                                           <td>${item.name}</td>
+                                               <td>${item.deseaseName}</td>
+                                               <td>${item.epilepsyName}</td>
+                                                       <td>${ncds}</td>
+                                                       <td>${allergies}</td>
+                                                           <td><button type="button" id='${item.id}' name="btnEdit" value='${item.id}' class="btn btn-primary btnEdit" style="width:70px;">Edit</button></td>
+                                                                           <td><button type="button" id='${item.id}' name="btnDelete" value='${item.id}' class="btn btn-danger btnDelete" style="width:70px;">Delete</button></td>
+                                   </tr>`);
+
+                    });
+                }
+            });
+        };
+
+
+        $('#btnSave').click(function () {
+            debugger;
+            if ($('#PatientName').val().trim() == '') {
+                toastr["error"]('Name Required.');
+                changecolor("PatientName");
+                return false;
+            }
+            if ($('#DeseaseId').val() == '') {
+                toastr["error"]('Diseases Name Required.');
+                changecolor("DeseaseId");
+                return false;
+            }
+            if ($('#EpilepsyId').val() == '') {
+                toastr["error"]('Epilepsy Required.');
+                changecolor("EpilepsyId");
+                return false;
+            }
+            if (allergiesNameList.length == 0) {
+                toastr["error"]('Allergies Name Required.');
+                changecolor("AllergiesName");
+                return false;
+            }
+
+            if ($('#Id').val() == '') {
+                id = 0;
+            }
+            else {
+                id = $('#Id').val();
+            }
+
+            let deseaseId = $('#DeseaseId').val();
+            let epilepsyId = $('#EpilepsyId').val();
+            let ns = $("#PatientName").val();
+            let modeId = id;
+            let ncdlist = otherNCDsList;
+            let allergies = allergiesNameList;
+            var jsonInput = { Id: modeId, DeseaseId: deseaseId, EpilepsyId: epilepsyId, Name: ns, NCDs: ncdlist, Allergies: allergies };
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: 'PatientInfo/CreatePatientInfo/',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(jsonInput),
+                success: function (res) {
+                    console.log(res);
+                    window.location.reload();
+                },
+                error: function (res) {
+                    debugger;
+                    console.log(res.statusText);
+                    window.location.reload();
+                }
+            });
+        });
+
+        $('#addBtn').click(function () {
+            debugger;
+            if ($('#OtherNCDs').val().trim()) {
+                $("ul.style").append(`<li>${$('#OtherNCDs').val()}<button id="det" onclick="deleteOther(this);"><i class="trash fa fa-trash-o"></i></button></li>`);
+                otherNCDsList.push({
+                    'Name': $('#OtherNCDs').val().trim(),
+                });
+                $("#OtherNCDs").val('');
+            }
+            else {
+                alert('empty input!')
+            }
+        });
+        $('#addAllergyBtn').click(function () {
+            debugger;
+            if ($('#AllergiesName').val().trim()) {
+                $("ul.styles").append(`<li>${$('#AllergiesName').val()}<button id="detAllergy" onclick="deleteAllergy(this);"><i class="trash fa fa-trash-o"></i></button></li>`);
+                allergiesNameList.push({
+                    'Name': $('#AllergiesName').val().trim(),
+                });
+
+                $("#AllergiesName").val('');
+            }
+            else {
+                alert('empty input!')
+            }
+        });
+
+
+    });
+
+    $("#modalShowing").on('click', function (e) {
+        debugger;
+        $("#Id").val('');
+        $("#PatientName").val('');
+        $("#DeseaseId").val('');
+        $("#Epilepsy").val('');
+        $("#OtherNCDs").val('');
+        $("#AllergiesName").val('');
+        $("ul.style").append('');
+        $("ul.styles").append('');
+        //$("ul.styles").remove();
+        otherNCDsList = [];
+        allergiesNameList = [];
+        $('#title').html('Add Patient Info');
+        $("#btnSave").val('Save');
+        $('#addmodal').modal('show');
+    });
+
+    $('body').on('click', '.btnEdit', function (e) {
+        debugger;
+        var id = e.target.value;
+        $.ajax({
+            type: 'GET',
+            url: 'PatientInfo/EditPatientInfoById/' + id,
+            success: function (res) {
+                debugger;
+                $('#Id').val(res.id);
+                $('#PatientName').val(res.name);
+                $('#DeseaseId').val(res.deseaseId);
+                $('#EpilepsyId').val(res.epilepsyId);
+                $.each(res.ncDs, function (i, item) {
+                    $("ul.style").append(`<li>${item.name}<button id="det" onclick="deleteOther(this);"><i class="trash fa fa-trash-o"></i></button></li>`);
+                    otherNCDsList.push({
+                        'Id': item.id,
+                        'Name': item.name,
+                    });
+                });
+                $.each(res.allergies, function (i, item) {
+                    $("ul.styles").append(`<li>${item.name}<button id="detAllergy" onclick="deleteAllergy(this);"><i class="trash fa fa-trash-o"></i></button></li>`);
+                    allergiesNameList.push({
+                        'Id': item.id,
+                        'Name': item.name,
+                    });
+                });
+                $('#title').html('Update Patient Info');
+                $("#btnSave").val('Update');
+                $('#addmodal').modal('show');
+            }
+        });
+    });
+
+    $('body').on('click', '.btnDelete', function (e) {
+        var id = e.target.value;
+        var _confirm = confirm("Are you sure you want to delete this ?");
+        if (_confirm == true) {
+            $.ajax({
+                type: "Delete",
+                url: 'PatientInfo/Delete/' + id,
+                contentType: "application/json; charset=utf-8",
+                success: function (res) {
+                    console.log(res);
+                },
+                error: function (res) {
+                    console.log(res.statusText);
+                }
+            });
+        }
+        _confirm = false;
+    });
+
+    function changecolor(id) {
+        $("#" + id).css("border", "1px solid red");
+        setTimeout(function () { $("#" + id).css("border", "1px groove #ddd"); }, 3000)
+    };
+
+    function deleteOther(e) {
+        debugger;
+        var objIndex = otherNCDsList.findIndex((obj => obj.Name == e.parentElement.textContent));
+        otherNCDsList.splice(objIndex, 1);
+        e.parentElement.remove();
+    };
+    function deleteAllergy(e) {
+        debugger;
+        var objIndex = allergiesNameList.findIndex((obj => obj.Name == e.parentElement.textContent));
+        allergiesNameList.splice(objIndex, 1);
+        e.parentElement.remove();
+    };
+
+</script>

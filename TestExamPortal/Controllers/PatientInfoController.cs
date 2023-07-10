@@ -39,6 +39,24 @@ namespace TestExamPortal.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdatePatientInfo([FromBody] PatientInfoViewModel model)
+        {
+            try
+            {
+                HttpResponseMessage httpResponseMessage = await _client.PutAsJsonAsync($"PatientInfo/{model.ID}", model);
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<List<PatientInfoViewModels>> GetAllPatienInfo()
         {
             try
@@ -81,7 +99,7 @@ namespace TestExamPortal.Controllers
             {
                 throw ex;
             }
-        }
+       }
 
         public async Task<IActionResult> EditPatientInfoById(int id)
         {
@@ -106,7 +124,9 @@ namespace TestExamPortal.Controllers
         {
             try
             {
-                var res = await _client.DeleteAsync($"PatientInfo/{id}");
+                var res = await _client.DeleteAsync($"Allergies/{id}");
+                res = await _client.DeleteAsync($"NCD/{id}");
+                res = await _client.DeleteAsync($"PatientInfo/{id}");
                 if (res.IsSuccessStatusCode)
                 {
                     return Ok();
@@ -118,6 +138,8 @@ namespace TestExamPortal.Controllers
                 throw ex;
             }
         }
+
+
 
     }
 }

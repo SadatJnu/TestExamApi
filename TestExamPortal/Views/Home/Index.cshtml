@@ -472,9 +472,17 @@
             let allergies = allergiesNameList;
             var jsonInput = { Id: modeId, DeseaseId: deseaseId, EpilepsyId: epilepsyId, Name: ns, NCDs: ncdlist, Allergies: allergies };
             debugger;
+            let url = '';
+            if (id != 0) {
+                url = 'PatientInfo/UpdatePatientInfo/';
+            }
+            else 
+            {
+                url = 'PatientInfo/CreatePatientInfo/';
+            }
             $.ajax({
                 type: 'POST',
-                url: 'PatientInfo/CreatePatientInfo/',
+                url: url,
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(jsonInput),
@@ -581,9 +589,11 @@
                 url: 'PatientInfo/Delete/' + id,
                 contentType: "application/json; charset=utf-8",
                 success: function (res) {
+                    debugger;
                     console.log(res);
                 },
                 error: function (res) {
+                    debugger;
                     console.log(res.statusText);
                 }
             });

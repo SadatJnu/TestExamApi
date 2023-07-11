@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using System.Linq;
 using TestExamApi.AppData;
 using TestExamApi.Data;
 using TestExamApi.Entites;
@@ -55,6 +56,29 @@ namespace TestExamApi.Controllers
             catch (Exception)
             {
 
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
+        public override async Task<ActionResult> DeleteAsync([FromRoute] int id)
+        {
+            try
+            {
+                var result = await _dbContext.PatientInfos.Include(sd => sd.NCDs).Include(x => x.Allergies).Where(e => e.ID == id).FirstOrDefaultAsync();
+                _dbContext.PatientInfos.Remove(result);
+                _dbContext.SaveChangesAsync();
+                if (result != null)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return NotFound($"{id} not found");
+                }
+            }
+            catch (Exception ex)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error retrieving data from the database");
             }

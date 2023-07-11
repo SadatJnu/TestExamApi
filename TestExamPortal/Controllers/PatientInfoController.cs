@@ -124,9 +124,9 @@ namespace TestExamPortal.Controllers
         {
             try
             {
-                var res = await _client.DeleteAsync($"Allergies/{id}");
-                res = await _client.DeleteAsync($"NCD/{id}");
-                res = await _client.DeleteAsync($"PatientInfo/{id}");
+                //var res = await _client.DeleteAsync($"Allergies/{id}");
+                //res = await _client.DeleteAsync($"NCD/{id}");
+                var res = await _client.DeleteAsync($"PatientInfo/{id}");
                 if (res.IsSuccessStatusCode)
                 {
                     return Ok();
